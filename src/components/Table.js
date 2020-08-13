@@ -100,7 +100,7 @@ class Table extends Component {
     return (
       <>
         <Searchbar filterBy={this.filterBy} />
-        <table className="table table-striped">
+        <table className="table table-striped table-responsive-md">
           <thead>
             <tr>
               <th scope="col">Photo</th>

@@ -17,7 +17,7 @@
     View code
   </a>
   ·
-  <a href="https://github.com/derek-watson14/ReactEmployeeDirectory">
+  <a href="https://shrouded-journey-63820.herokuapp.com/">
     View deployment
   </a>
   ·
