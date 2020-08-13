@@ -1,0 +1,24 @@
+.thumbnail {
+  border-radius: 50%;
+  border: whitesmoke solid 3px;
+}
+.sortable:hover {
+  cursor: pointer;
+}
+.splashImg {
+  height: 400px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+    url("../images/office.jpg");
+  background-size: cover;
+}
+.headerText {
+  color: whitesmoke;
+  font-size: 3rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 20px;
+}
+.companyInfo {
+  color: whitesmoke;
+  width: 80%;
+  text-align: center;
+}

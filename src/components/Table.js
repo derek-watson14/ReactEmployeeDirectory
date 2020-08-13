@@ -1,26 +1,18 @@
 import React, { Component } from "react";
 import API from "../utils/API";
-
-const styles = {
-  img: {
-    borderRadius: "50%",
-    border: "lightsalmon solid 3px",
-  },
-  th: {},
-};
+import Searchbar from "./Searchbar";
+import "./styles.css";
 
 class Table extends Component {
   state = {
     employees: [],
+    filtered: null,
     sortStatus: "",
   };
 
   async componentDidMount() {
     const employees = await API.randomEmployees();
-    const sorted = employees.data.results.sort((em1, em2) => {
-      return em1.name.first > em2.name.first ? 1 : -1;
-    });
-    this.setState({ employees: sorted, sortStatus: "first-asc" });
+    this.setState({ employees: employees.data.results });
   }
 
   createTableRow(employee) {
@@ -28,9 +20,9 @@ class Table extends Component {
       <tr key={employee.id.value}>
         <td>
           <img
-            style={styles.img}
+            className="thumbnail"
             src={employee.picture.thumbnail}
-            alt={employee.name}
+            alt={employee.name.first}
           />
         </td>
         <td>{employee.name.first}</td>
@@ -41,41 +33,55 @@ class Table extends Component {
     );
   }
 
-  sortTable = (button) => {
-    const employees = [...this.state.employees];
+  sortByName = (header) => {
     let sorted, status;
-    switch (this.state.sortStatus) {
-      case "first-asc" && button === "first":
-        sorted = employees.sort((em1, em2) => {
-          return em1.name.first > em2.name.first ? -1 : 1;
-        });
-        status = "first-desc";
-        break;
-      case "first-desc" && button === "first":
-        sorted = employees.sort((em1, em2) => {
-          return em1.name.first > em2.name.first ? 1 : -1;
-        });
-        status = "first-asc";
-        break;
-      case "last-asc" && button === "first":
-        sorted = employees.sort((em1, em2) => {
-          return em1.name.last > em2.name.last ? 1 : -1;
-        });
-        status = "last-desc";
-        break;
-      case "last-asc" && button === "first":
-        sorted = employees.sort((em1, em2) => {
-          return em1.name.last > em2.name.last ? 1 : -1;
-        });
-        status = "last-desc";
-        break;
-      default:
-        sorted = employees.sort((em1, em2) => {
-          return em1.name.first > em2.name.first ? 1 : -1;
-        });
-        status = "first-asc";
+    let employees = this.state.filtered
+      ? [...this.state.filtered]
+      : [...this.state.employees];
+    if (this.state.sortStatus === `${header}-asc`) {
+      sorted = employees.sort((em1, em2) => {
+        return em1.name[header] > em2.name[header] ? -1 : 1;
+      });
+      status = `${header}-desc`;
+    } else {
+      sorted = employees.sort((em1, em2) => {
+        return em1.name[header] > em2.name[header] ? 1 : -1;
+      });
+      status = `${header}-asc`;
     }
-    this.setState({ employees: sorted, sortStatus: status });
+    this.setState({ filtered: sorted, sortStatus: status });
+  };
+
+  displayEmployees = () => {
+    if (this.state.filtered) {
+      return this.state.filtered.map((employee) => {
+        return this.createTableRow(employee);
+      });
+    } else {
+      return this.state.employees.map((employee) => {
+        return this.createTableRow(employee);
+      });
+    }
+  };
+
+  filterBy = (input) => {
+    if (input) {
+      const employees = [...this.state.employees];
+
+      const filtered = employees.filter((emp) => {
+        const inFirst = emp.name.first.includes(input);
+        const inLast = emp.name.last.includes(input);
+        const inEmail = emp.email.includes(input);
+        if (inFirst || inLast || inEmail) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      this.setState({ filtered: filtered });
+    } else {
+      this.setState({ filtered: null });
+    }
   };
 
   determineIcon(columnName) {
@@ -92,26 +98,33 @@ class Table extends Component {
 
   render() {
     return (
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Photo</th>
-            <th scope="col" onClick={() => this.sortTable("first")}>
-              First <i className={this.determineIcon("first")} />
-            </th>
-            <th scope="col" onClick={() => this.sortTable("last")}>
-              Last <i className={this.determineIcon("last")} />
-            </th>
-            <th scope="col">Email</th>
-            <th scope="col">Cell</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.employees.map((employee) => {
-            return this.createTableRow(employee);
-          })}
-        </tbody>
-      </table>
+      <>
+        <Searchbar filterBy={this.filterBy} />
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Photo</th>
+              <th
+                className="sortable"
+                scope="col"
+                onClick={() => this.sortByName("first")}
+              >
+                First <i className={this.determineIcon("first")} />
+              </th>
+              <th
+                className="sortable"
+                scope="col"
+                onClick={() => this.sortByName("last")}
+              >
+                Last <i className={this.determineIcon("last")} />
+              </th>
+              <th scope="col">Email</th>
+              <th scope="col">Cell</th>
+            </tr>
+          </thead>
+          <tbody>{this.displayEmployees()}</tbody>
+        </table>
+      </>
     );
   }
 }
