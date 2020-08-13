@@ -77,10 +77,16 @@ Contributions are what make the open source community such an amazing place to b
 git clone https://github.com/derek-watson14/ReactEmployeeDirectory.git
 ```
 
-2. Install NPM packages (if applicable)
+2. Install NPM packages
 
 ```sh
 npm install
+```
+
+3. Run React development server
+
+```sh
+npm start
 ```
 
   <!-- USAGE EXAMPLES -->
